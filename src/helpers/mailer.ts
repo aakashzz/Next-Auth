@@ -13,13 +13,17 @@ export const sendEmail = async ({ email, emailType, userID }: Properties) => {
 
       if (emailType === "VERIFY") {
          await User.findByIdAndUpdate(userID, {
-            verifyToken: hashedToken,
-            verifyTokenExpiry: Date.now() + 3600000,
+            $set: {
+               verifyToken: hashedToken,
+               verifyTokenExpiry: Date.now() + 3600000,//expiry from 1 hour
+            },
          });
       } else if (emailType === "RESET") {
          await User.findByIdAndUpdate(userID, {
-            forgotPasswordToken: hashedToken,
-            forgotPasswordTokenExpiry: Date.now() + 3600000,
+            $set: {
+               forgotPasswordToken: hashedToken,
+               forgotPasswordTokenExpiry: Date.now() + 3600000,
+            },
          });
       }
 
@@ -28,17 +32,19 @@ export const sendEmail = async ({ email, emailType, userID }: Properties) => {
          host: "sandbox.smtp.mailtrap.io",
          port: 2525,
          auth: {
-           user: "4d69dba326e579",
-           pass: "5ac142ade66f1b"
-         }
-       });
+            user: "4d69dba326e579",
+            pass: "5ac142ade66f1b",
+         },
+      });
 
       const mailOptions = {
          from: "aakash@aakash.ai",
          to: email,
          subject:
             emailType === "VERIFY" ? "Verify your email" : "Rest your password",
-         html: `<p>Click <a href="${process.env.DOMAIN}/verifyEmail?token=${hashedToken}">here</a> to ${
+         html: `<p>Click <a href="${
+            process.env.DOMAIN
+         }/verifyEmail?token=${hashedToken}">here</a> to ${
             emailType === "VERIFY" ? "verify your email" : "rest your password"
          } or copy and paste the link below in your browser. <br>
             ${process.env.DOMAIN}/verifyEmail?/token=${hashedToken}
