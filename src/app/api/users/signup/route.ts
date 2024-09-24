@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
          message: "User successFully register",
          success: true,
          savedUser,
-      });
+      });  
    } catch (error: any) {
       return NextResponse.json({ error: error.message }, { status: 500 });
    }
